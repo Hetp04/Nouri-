@@ -1,0 +1,217 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#FBFBF9',
+    },
+    safeArea: {
+        flex: 1,
+    },
+    main: {
+        flex: 1,
+        paddingHorizontal: 24,
+        paddingTop: 16,
+        paddingBottom: 32,
+    },
+    header: {
+        marginBottom: 16,
+    },
+    avatarContainer: {
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    avatarImage: {
+        width: 180,
+        height: 180,
+    },
+    progressContainer: {
+        flexDirection: 'row',
+        gap: 6,
+        marginBottom: 14,
+    },
+    progressStep: {
+        flex: 1,
+        height: 4,
+        backgroundColor: '#F3F4F6',
+        borderRadius: 2,
+    },
+    progressStepActive: {
+        backgroundColor: '#2F6B4F',
+    },
+    title: {
+        fontSize: 26,
+        fontWeight: '600',
+        letterSpacing: -0.5,
+        color: '#202123',
+        marginBottom: 6,
+    },
+    subtitle: {
+        fontSize: 14,
+        fontWeight: '400',
+        lineHeight: 20,
+        color: '#6E6E80',
+    },
+    optionsContainer: {
+        flex: 1,
+    },
+    optionsGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        marginBottom: 20,
+    },
+    optionChip: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        borderRadius: 100,
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1.5,
+        borderColor: '#E5E5E5',
+        gap: 6,
+    },
+    optionChipSelected: {
+        backgroundColor: 'rgba(47, 107, 79, 0.1)',
+        borderColor: '#2F6B4F',
+    },
+    optionIcon: {
+        fontSize: 18,
+    },
+    optionText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#353740',
+    },
+    optionTextSelected: {
+        color: '#2F6B4F',
+        fontWeight: '600',
+    },
+    customInputContainer: {
+        marginTop: 4,
+        paddingTop: 16,
+        borderTopWidth: 1,
+        borderTopColor: '#ECECF1',
+    },
+    customInputLabel: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#6E6E80',
+        marginBottom: 8,
+    },
+    customInputRow: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    customInput: {
+        flex: 1,
+        height: 44,
+        borderWidth: 1.5,
+        borderColor: '#E5E5E5',
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        fontSize: 14,
+        color: '#202123',
+        backgroundColor: '#FFFFFF',
+    },
+    customInputPlaceholder: {
+        position: 'absolute',
+        left: 12,
+        top: 12,
+        fontSize: 14,
+        color: '#A1A1AA',
+    },
+    addButton: {
+        width: 44,
+        height: 44,
+        borderRadius: 8,
+        backgroundColor: '#2F6B4F',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    addButtonText: {
+        fontSize: 22,
+        fontWeight: '400',
+        color: '#FFFFFF',
+    },
+    customChipsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        marginTop: 16,
+    },
+    customChip: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingLeft: 12,
+        paddingRight: 6,
+        paddingVertical: 6,
+        borderRadius: 100,
+        backgroundColor: 'rgba(47, 107, 79, 0.1)',
+        borderWidth: 1,
+        borderColor: '#2F6B4F',
+        gap: 6,
+    },
+    customChipText: {
+        fontSize: 13,
+        fontWeight: '500',
+        color: '#2F6B4F',
+    },
+    removeButton: {
+        width: 18,
+        height: 18,
+        borderRadius: 9,
+        backgroundColor: '#2F6B4F',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    removeButtonText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#FFFFFF',
+        lineHeight: 14,
+    },
+    footer: {
+        paddingTop: 12,
+    },
+    footerButtons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    backButton: {
+        width: 52,
+        height: 52,
+        borderRadius: 8,
+        backgroundColor: '#F3F4F6',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    continueButton: {
+        flex: 1,
+        height: 52,
+        borderRadius: 8,
+        backgroundColor: '#2F6B4F',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    continueButtonDisabled: {
+        backgroundColor: '#D9D9E3',
+    },
+    continueButtonText: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#FFFFFF',
+    },
+    skipButton: {
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    skipButtonText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#6E6E80',
+    },
+});
