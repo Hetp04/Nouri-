@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, SafeAreaView, Image, Text, Pressable, Animated, Keyboard, TextInput, Easing, Dimensions, PanResponder, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../styles/homeScreen.styles';
 import { NoteEditor } from '../components/NoteEditor';
 import { AnimatedScreen } from '../components/AnimatedScreen';
@@ -10,24 +11,24 @@ import { ForbiddenListModal } from '../components/ForbiddenListModal';
 import { AnimatedNumber } from '../components/AnimatedNumber';
 import { VoiceWaveform } from '../components/VoiceWaveform';
 import { useVoiceRecorder, MicStatus } from '../hooks/useVoiceRecorder';
+import { SettingsScreen } from './SettingsScreen';
 
 import { supabase } from '../lib/supabase';
 
 interface Props {
   email: string;
   onSignOut: () => void;
-  onOpenSettings: () => void;
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-export function HomeScreen({ email, onSignOut, onOpenSettings }: Props) {
+export function HomeScreen({ email, onSignOut }: Props) {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Notes storage: {'YYYY-MM-DD': 'content'}
   const [notes, setNotes] = useState<Record<string, string>>({});
 
-  // Helper to get key for storage - moving up for scope
+  // Helper to get key for storage
   const getDateKey = (date: Date) => {
     return date.toISOString().split('T')[0];
   };
@@ -39,15 +40,27 @@ export function HomeScreen({ email, onSignOut, onOpenSettings }: Props) {
 
 
   const [issueCount, setIssueCount] = useState(0);
-  const [dailyScore, setDailyScore] = useState(0);
+  const [dailyScore, setDailyScore] = useState(87); // Default to a "good" score or cached value
 
+  // Load cached values on mount
   useEffect(() => {
-    // Delay slightly to trigger the "slot machine" animation
-    setTimeout(() => {
-      setDailyScore(87);
-    }, 100);
+    const loadCache = async () => {
+      try {
+        const [cachedScore, cachedCount] = await Promise.all([
+          AsyncStorage.getItem('daily_score'),
+          AsyncStorage.getItem('issue_count')
+        ]);
+
+        if (cachedScore) setDailyScore(parseInt(cachedScore, 10));
+        if (cachedCount) setIssueCount(parseInt(cachedCount, 10));
+      } catch (e) {
+        console.log('Failed to load cache', e);
+      }
+    };
+    loadCache();
   }, []);
 
+  const [showSettings, setShowSettings] = useState(false);
   const [showCameraMenu, setShowCameraMenu] = useState(false);
   const [isDropdownMounted, setIsDropdownMounted] = useState(false);
   const [dropdownAnim] = useState(new Animated.Value(0));
@@ -63,31 +76,33 @@ export function HomeScreen({ email, onSignOut, onOpenSettings }: Props) {
   const [userConcerns, setUserConcerns] = useState<string[]>([]);
   const [userAllergies, setUserAllergies] = useState<string[]>([]);
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('concerns, allergies')
-            .eq('user_id', user.id)
-            .single();
+  const fetchUserProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('concerns, allergies')
+          .eq('user_id', user.id)
+          .single();
 
-          if (profile) {
-            setUserConcerns(profile.concerns || []);
-            setUserAllergies(profile.allergies || []);
-            // Update the "shield count" to be the total number of restricted items
-            setIssueCount((profile.concerns?.length || 0) + (profile.allergies?.length || 0));
-          }
+        if (profile) {
+          setUserConcerns(profile.concerns || []);
+          setUserAllergies(profile.allergies || []);
+
+          const totalIssues = (profile.concerns?.length || 0) + (profile.allergies?.length || 0);
+          setIssueCount(totalIssues);
+          AsyncStorage.setItem('issue_count', totalIssues.toString());
         }
-      } catch (e) {
-        console.warn('Failed to fetch user profile:', e);
       }
-    };
+    } catch (e) {
+      console.warn('Failed to fetch user profile:', e);
+    }
+  };
 
+  useEffect(() => {
     fetchUserProfile();
-  }, [email]); // Re-fetch when email changes (sign in/out)
+  }, [email]);
   const [isAnimating, setIsAnimating] = useState(false);
   const [exitNote, setExitNote] = useState<string | null>(null);
   const slideAnim = useRef(new Animated.Value(1)).current;
@@ -496,7 +511,7 @@ export function HomeScreen({ email, onSignOut, onOpenSettings }: Props) {
               {issueCount > 0 && (
                 <Text style={styles.shieldCountText}>{issueCount}</Text>
               )}
-              <Pressable style={styles.shieldContainer} onPress={onOpenSettings}>
+              <Pressable style={styles.shieldContainer} onPress={() => setShowSettings(true)}>
                 <Image
                   source={require('../../images/gear-setting-settings-svgrepo-com.png')}
                   style={{ width: 18, height: 18, tintColor: '#111111' }}
@@ -843,6 +858,15 @@ export function HomeScreen({ email, onSignOut, onOpenSettings }: Props) {
             </View>
           </View>
         </Animated.View>
+
+        <SettingsScreen
+          visible={showSettings}
+          onClose={() => setShowSettings(false)}
+          email={email}
+          onSignOut={onSignOut}
+          onOpenDietaryProfile={() => setShowForbiddenList(true)}
+          onUpdateProfile={fetchUserProfile}
+        />
 
         <ForbiddenListModal
           visible={showForbiddenList}

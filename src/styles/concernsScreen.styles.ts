@@ -214,4 +214,7 @@ export const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#6E6E80',
     },
+    nextButtonWrapper: {
+        flex: 1,
+    },
 });

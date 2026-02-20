@@ -12,14 +12,13 @@ import { SignInScreen } from './src/screens/SignInScreen';
 import { SignUpScreen } from './src/screens/SignUpScreen';
 import { FactsScreen } from './src/screens/FactsScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
-import { SettingsScreen } from './src/screens/SettingsScreen';
 import { AnimatedScreen } from './src/components/AnimatedScreen';
 import { LogoMorphOverlay } from './src/components/LogoMorphOverlay';
 import { supabase } from './src/lib/supabase';
 import { loadOnboardingData, clearOnboardingData } from './src/lib/storage';
 
 
-type Screen = 'splash' | 'welcome' | 'concerns' | 'allergies' | 'facts' | 'signIn' | 'signUp' | 'home' | 'settings';
+type Screen = 'splash' | 'welcome' | 'concerns' | 'allergies' | 'facts' | 'signIn' | 'signUp' | 'home';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
@@ -347,28 +346,9 @@ export default function App() {
               setDirection('back');
               setCurrentScreen('welcome');
             }}
-            onOpenSettings={() => {
-              setDirection('forward');
-              setCurrentScreen('settings');
-            }}
           />
         );
-      case 'settings':
-        return (
-          <SettingsScreen
-            email={pendingEmail}
-            onBack={() => {
-              setDirection('back');
-              setCurrentScreen('home');
-            }}
-            onSignOut={() => {
-              setPendingEmail('');
-              setUserData({ concerns: [], allergies: [] });
-              setDirection('back');
-              setCurrentScreen('welcome');
-            }}
-          />
-        );
+
       default:
         return null;
     }

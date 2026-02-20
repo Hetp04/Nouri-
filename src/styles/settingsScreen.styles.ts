@@ -3,7 +3,7 @@ import { StyleSheet, Platform } from 'react-native';
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#F9FAFB', // Light gray background
     },
     safeArea: {
         flex: 1,
@@ -13,12 +13,13 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 20,
-        paddingTop: 10,
+        paddingTop: 30, // Adjusted down from 20
         paddingBottom: 20,
         position: 'relative',
     },
     backButton: {
         position: 'absolute',
+        top: 22, // Adjusted to match 30px padding
         left: 20,
         width: 40,
         height: 40,
@@ -35,41 +36,55 @@ export const styles = StyleSheet.create({
     content: {
         flex: 1,
         paddingHorizontal: 24,
-        paddingTop: 20,
+        paddingTop: 10, // Reduced from 20 to move contents up
     },
     section: {
         marginBottom: 32,
     },
     sectionTitle: {
-        fontSize: 14,
-        fontFamily: 'Poppins_600SemiBold',
-        color: '#6B7280',
-        marginBottom: 16,
-        textTransform: 'uppercase',
-        letterSpacing: 1,
+        fontSize: 16,
+        fontFamily: 'Poppins_500Medium', // Slightly lighter weight for non-caps
+        color: '#111111', // Match icons and row labels
+        marginBottom: 12, // Slightly less margin
+        // textTransform: 'uppercase', // Removed as requested
+        // letterSpacing: 1, // Removed
     },
     settingsGroup: {
-        backgroundColor: '#F9FAFB',
+        backgroundColor: '#FFFFFF', // White cards
         borderRadius: 20,
-        padding: 8,
+        padding: 0,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#E5E5E5',
+        // Add subtle shadow for white cards on grey background
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.08,
+                shadowRadius: 10,
+            },
+            android: {
+                elevation: 2,
+            },
+        }),
     },
     settingsItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 14,
-        paddingHorizontal: 16,
+        paddingVertical: 18,
+        paddingHorizontal: 20,
+        backgroundColor: '#FFFFFF', // White background for items
     },
     settingsItemText: {
-        flex: 1,
         fontSize: 16,
-        fontFamily: 'OpenSans_600SemiBold',
+        fontFamily: 'OpenSans_400Regular',
         color: '#111111',
     },
     settingsItemValue: {
-        fontSize: 14,
+        fontSize: 16,
         fontFamily: 'OpenSans_400Regular',
         color: '#6B7280',
-        marginRight: 8,
     },
     separator: {
         height: 1,

@@ -12,7 +12,7 @@ interface Props {
 const BAR_WIDTH = 1.5;
 const BAR_GAP = 1.5;
 const STEP = BAR_WIDTH + BAR_GAP;
-const SPAWN_MS = 32; // 30fps - High fidelity graph updates
+const SPAWN_MS = 20; // 50fps - Faster updates for fluid motion
 
 const MIN_H_FRAC = 0.08; // Very low base height for "axis-like" silence
 const RECORDING_COLOR = '#111111'; // Pure dark for high contrast

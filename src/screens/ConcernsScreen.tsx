@@ -313,7 +313,7 @@ export function ConcernsScreen({ onContinue, onBack, initialConcerns = [], onSel
                                     <Ionicons name="chevron-back" size={24} color="#111111" />
                                 </Pressable>
                             </Animated.View>
-                            <Animated.View style={[{ flex: 1 }, { transform: [{ scale: nextScale }] }]}>
+                            <Animated.View style={[styles.nextButtonWrapper, { transform: [{ scale: nextScale }] }]}>
                                 <Pressable
                                     style={[
                                         styles.continueButton,
