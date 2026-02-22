@@ -8,6 +8,8 @@ import { SplashScreen } from './src/screens/SplashScreen';
 import { WelcomeScreen } from './src/screens/WelcomeScreen';
 import { ConcernsScreen } from './src/screens/ConcernsScreen';
 import { AllergiesScreen } from './src/screens/AllergiesScreen';
+import { ShoppingScreen } from './src/screens/ShoppingScreen';
+import { ProcessLevelScreen } from './src/screens/ProcessLevelScreen';
 import { SignInScreen } from './src/screens/SignInScreen';
 import { SignUpScreen } from './src/screens/SignUpScreen';
 import { FactsScreen } from './src/screens/FactsScreen';
@@ -18,7 +20,7 @@ import { supabase } from './src/lib/supabase';
 import { loadOnboardingData, clearOnboardingData } from './src/lib/storage';
 
 
-type Screen = 'splash' | 'welcome' | 'concerns' | 'allergies' | 'facts' | 'signIn' | 'signUp' | 'home';
+type Screen = 'splash' | 'welcome' | 'concerns' | 'allergies' | 'shopping' | 'processLevel' | 'facts' | 'signIn' | 'signUp' | 'home';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
@@ -29,6 +31,8 @@ export default function App() {
   const [userData, setUserData] = useState({
     concerns: [] as string[],
     allergies: [] as string[],
+    shopping: [] as string[],
+    ultraProcessedIntake: 0,
   });
   const [pendingEmail, setPendingEmail] = useState('');
   const [sessionChecked, setSessionChecked] = useState(false);
@@ -62,7 +66,7 @@ export default function App() {
   // This means if the user quit mid-flow, their pill selections are recovered.
   useEffect(() => {
     loadOnboardingData().then((saved) => {
-      if (saved.concerns.length > 0 || saved.allergies.length > 0) {
+      if (saved.concerns.length > 0 || saved.allergies.length > 0 || saved.shopping?.length > 0 || saved.ultraProcessedIntake !== undefined) {
         setUserData(saved);
         if (__DEV__) console.log('[App] Restored onboarding data from storage:', saved);
       }
@@ -95,6 +99,7 @@ export default function App() {
         require('./images/facts.png'),
         require('./images/sign.png'),
         require('./images/signup.png'),
+        require('./images/cart.png'),
       ];
 
       // Preload GIFs with higher priority
@@ -155,13 +160,13 @@ export default function App() {
   const handleAllergiesContinue = (selectedAllergies: string[]) => {
     setUserData(prev => ({ ...prev, allergies: selectedAllergies }));
     setDirection('forward');
-    setCurrentScreen('facts');
+    setCurrentScreen('shopping');
   };
 
   // Called when a user finishes onboarding and lands on Home.
   // Writes a user_profiles row so next time they sign in with Google
   // they are correctly identified as a returning user and skip onboarding.
-  const markOnboardingComplete = async (concerns: string[], allergies: string[]) => {
+  const markOnboardingComplete = async (concerns: string[], allergies: string[], shopping: string[], ultraProcessedIntake: number) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -170,6 +175,8 @@ export default function App() {
           onboarding_completed: true,
           concerns,
           allergies,
+          shopping,
+          ultra_processed_intake: ultraProcessedIntake,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id' });
         // Clear locally-persisted onboarding data now that it's safely in Supabase
@@ -266,6 +273,42 @@ export default function App() {
             onSkip={() => handleAllergiesContinue([])}
           />
         );
+      case 'shopping':
+        return (
+          <ShoppingScreen
+            initialShopping={userData.shopping}
+            onSelectionChange={(selected) => {
+              setUserData(prev => ({ ...prev, shopping: selected }));
+            }}
+            onContinue={(selectedShopping) => {
+              setUserData(prev => ({ ...prev, shopping: selectedShopping }));
+              setDirection('forward');
+              setCurrentScreen('processLevel');
+            }}
+            onBack={() => {
+              setDirection('back');
+              setCurrentScreen('allergies');
+            }}
+          />
+        );
+      case 'processLevel':
+        return (
+          <ProcessLevelScreen
+            initialValue={userData.ultraProcessedIntake}
+            onSelectionChange={(intake) => {
+              setUserData(prev => ({ ...prev, ultraProcessedIntake: intake }));
+            }}
+            onContinue={(intake) => {
+              setUserData(prev => ({ ...prev, ultraProcessedIntake: intake }));
+              setDirection('forward');
+              setCurrentScreen('facts');
+            }}
+            onBack={() => {
+              setDirection('back');
+              setCurrentScreen('shopping');
+            }}
+          />
+        );
       case 'facts':
         return (
           <FactsScreen
@@ -277,7 +320,7 @@ export default function App() {
               const { data: { session } } = await supabase.auth.getSession();
               if (session?.user) {
                 setPendingEmail(session.user.email || '');
-                await markOnboardingComplete(userData.concerns, userData.allergies);
+                await markOnboardingComplete(userData.concerns, userData.allergies, userData.shopping, userData.ultraProcessedIntake);
                 setCurrentScreen('home');
               } else {
                 setCurrentScreen('signUp');
@@ -285,7 +328,7 @@ export default function App() {
             }}
             onBack={() => {
               setDirection('back');
-              setCurrentScreen('allergies');
+              setCurrentScreen('processLevel');
             }}
           />
         );
@@ -307,7 +350,7 @@ export default function App() {
                 setCurrentScreen('concerns');
               } else {
                 // Came through full onboarding (Facts → SignUp) → save everything and go home
-                await markOnboardingComplete(userData.concerns, userData.allergies);
+                await markOnboardingComplete(userData.concerns, userData.allergies, userData.shopping, userData.ultraProcessedIntake);
                 setCurrentScreen('home');
               }
             }}
@@ -324,7 +367,7 @@ export default function App() {
                 // New Google user but they already completed onboarding screens —
                 // save their profile and go home. Don't loop back to Concerns.
                 pendingGoogleEmailRef.current = email;
-                markOnboardingComplete(userData.concerns, userData.allergies).then(() => {
+                markOnboardingComplete(userData.concerns, userData.allergies, userData.shopping, userData.ultraProcessedIntake).then(() => {
                   setCurrentScreen('home');
                 });
               } else {
@@ -342,7 +385,7 @@ export default function App() {
             email={pendingEmail}
             onSignOut={() => {
               setPendingEmail('');
-              setUserData({ concerns: [], allergies: [] });
+              setUserData({ concerns: [], allergies: [], shopping: [], ultraProcessedIntake: 0 });
               setDirection('back');
               setCurrentScreen('welcome');
             }}
@@ -374,6 +417,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FBFBF9',
   },
 });

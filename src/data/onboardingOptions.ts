@@ -30,4 +30,18 @@ export const ALLERGY_OPTIONS = [
         image: require('../../images/peanut.png'),
         selectedImage: require('../../images/hazelnutFlipped.png')
     },
+    { id: 'sesame', label: 'Sesame', icon: 'flower-outline' as const },
+    { id: 'wheat', label: 'Wheat', icon: 'nutrition-outline' as const },
+    { id: 'corn', label: 'Corn', icon: 'nutrition-outline' as const },
+];
+
+export const SHOPPING_OPTIONS = [
+    { id: 'meat-seafood', label: 'Meat/Seafood', icon: 'fish-outline' as const },
+    { id: 'supplements', label: 'Supplements', icon: 'flask-outline' as const },
+    { id: 'snacks', label: 'Snacks', icon: 'pizza-outline' as const },
+    { id: 'dairy-eggs', label: 'Dairy/Eggs', icon: 'egg-outline' as const },
+    { id: 'produce', label: 'Produce', icon: 'leaf-outline' as const },
+    { id: 'frozen', label: 'Frozen', icon: 'snow-outline' as const },
+    { id: 'pantry', label: 'Pantry', icon: 'archive-outline' as const },
+    { id: 'beverages', label: 'Beverages', icon: 'wine-outline' as const },
 ];

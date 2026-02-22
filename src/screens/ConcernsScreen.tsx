@@ -229,7 +229,7 @@ export function ConcernsScreen({ onContinue, onBack, initialConcerns = [], onSel
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.main}>
                     <View style={styles.header}>
-                        <ProgressIndicator currentStep={1} totalSteps={4} />
+                        <ProgressIndicator currentStep={1} totalSteps={5} />
                         <View style={styles.avatarContainer}>
                             <ExpoImage
                                 source={require('../../images/help.png')}

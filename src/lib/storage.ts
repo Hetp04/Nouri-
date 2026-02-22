@@ -5,18 +5,26 @@ export const USER_DATA_STORAGE_KEY = 'nouri_onboarding_data';
 export interface OnboardingData {
     concerns: string[];
     allergies: string[];
+    shopping: string[];
+    ultraProcessedIntake: number;
 }
 
 export const loadOnboardingData = async (): Promise<OnboardingData> => {
     try {
         const jsonValue = await AsyncStorage.getItem(USER_DATA_STORAGE_KEY);
         if (jsonValue != null) {
-            return JSON.parse(jsonValue);
+            const data = JSON.parse(jsonValue);
+            return {
+                concerns: data.concerns || [],
+                allergies: data.allergies || [],
+                shopping: data.shopping || [],
+                ultraProcessedIntake: data.ultraProcessedIntake ?? 0
+            };
         }
-        return { concerns: [], allergies: [] };
+        return { concerns: [], allergies: [], shopping: [], ultraProcessedIntake: 0 };
     } catch (e) {
         console.warn('Failed to load onboarding data:', e);
-        return { concerns: [], allergies: [] };
+        return { concerns: [], allergies: [], shopping: [], ultraProcessedIntake: 0 };
     }
 };
 

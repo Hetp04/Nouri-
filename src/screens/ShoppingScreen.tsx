@@ -1,24 +1,23 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback, memo } from 'react';
-import { View, Text, ScrollView, Pressable, Animated, SafeAreaView, Image, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Pressable, Animated, SafeAreaView, Image, TextInput } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { ProgressIndicator } from '../components/ProgressIndicator';
-import { styles } from '../styles/allergiesScreen.styles';
+import { styles } from '../styles/ShoppingStyles';
 import { saveOnboardingData } from '../lib/storage';
 
-import { ALLERGY_OPTIONS } from '../data/onboardingOptions';
+import { SHOPPING_OPTIONS } from '../data/onboardingOptions';
 
 type Props = {
-    onContinue: (allergies: string[]) => void;
+    onContinue: (shopping: string[]) => void;
     onBack: () => void;
-    onSkip: () => void;
-    initialAllergies?: string[];
+    initialShopping?: string[];
     onSelectionChange?: (selected: string[]) => void;
 };
 
-const AllergyChip = memo(({ option, isSelected, onToggle }: {
-    option: typeof ALLERGY_OPTIONS[0],
+const ShoppingChip = memo(({ option, isSelected, onToggle }: {
+    option: typeof SHOPPING_OPTIONS[0],
     isSelected: boolean,
     onToggle: () => void
 }) => {
@@ -50,19 +49,11 @@ const AllergyChip = memo(({ option, isSelected, onToggle }: {
                 isSelected && styles.optionChipSelected,
                 { transform: [{ scale: scaleAnim }] }
             ]}>
-                {option.image ? (
-                    <Image
-                        source={isSelected && option.selectedImage ? option.selectedImage : option.image}
-                        style={[{ width: 20, height: 20 }, isSelected ? {} : { tintColor: '#353740' }]}
-                        resizeMode="contain"
-                    />
-                ) : (
-                    <Ionicons
-                        name={isSelected ? (option.icon.replace('-outline', '') as any) : option.icon}
-                        size={20}
-                        color={isSelected ? '#2F6B4F' : '#353740'}
-                    />
-                )}
+                <Ionicons
+                    name={isSelected ? (option.icon.replace('-outline', '') as any) : option.icon}
+                    size={20}
+                    color={isSelected ? '#2F6B4F' : '#353740'}
+                />
                 <Text style={[
                     styles.optionText,
                     isSelected && styles.optionTextSelected
@@ -74,33 +65,30 @@ const AllergyChip = memo(({ option, isSelected, onToggle }: {
     );
 });
 
-export function AllergiesScreen({ onContinue, onBack, onSkip, initialAllergies = [], onSelectionChange }: Props) {
-    // Seed from initialAllergies so back-navigation and app-restart restore selections
-    const [selectedAllergies, setSelectedAllergies] = useState<string[]>(initialAllergies);
-    const [customAllergy, setCustomAllergy] = useState('');
+export function ShoppingScreen({ onContinue, onBack, initialShopping = [], onSelectionChange }: Props) {
+    const [selectedShopping, setSelectedShopping] = useState<string[]>(initialShopping);
+    const [customShopping, setCustomShopping] = useState('');
     const [placeholderText, setPlaceholderText] = useState('');
 
-    // Notify parent + persist to AsyncStorage on every selection change.
-    // isFirstRender guard prevents overwriting storage/state with [] on mount.
     const isFirstRender = useRef(true);
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
             return;
         }
-        saveOnboardingData({ allergies: selectedAllergies });
-        onSelectionChange?.(selectedAllergies);
-    }, [selectedAllergies]);
+        saveOnboardingData({ shopping: selectedShopping });
+        onSelectionChange?.(selectedShopping);
+    }, [selectedShopping]);
+
     const [isFocused, setIsFocused] = useState(false);
     const placeholderOpacity = useRef(new Animated.Value(1)).current;
     const backScale = useRef(new Animated.Value(1)).current;
     const nextScale = useRef(new Animated.Value(1)).current;
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Use Set for O(1) lookup instead of O(n) array.includes()
-    const selectedSet = useMemo(() => new Set(selectedAllergies), [selectedAllergies]);
+    const selectedSet = useMemo(() => new Set(selectedShopping), [selectedShopping]);
 
-    const PLACEHOLDERS = ['e.g. Mustard', 'e.g. Lupin', 'e.g. Celery'];
+    const PLACEHOLDERS = ['e.g. Kosher options', 'e.g. Halal items', 'e.g. Meal prep kits'];
 
     useEffect(() => {
         let currentPlaceholderIndex = 0;
@@ -109,7 +97,7 @@ export function AllergiesScreen({ onContinue, onBack, onSkip, initialAllergies =
         let loopNum = 0;
 
         const type = () => {
-            if (isFocused || customAllergy.length > 0) {
+            if (isFocused || customShopping.length > 0) {
                 setPlaceholderText('');
                 return;
             }
@@ -144,7 +132,7 @@ export function AllergiesScreen({ onContinue, onBack, onSkip, initialAllergies =
         return () => {
             if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         };
-    }, [isFocused, customAllergy]);
+    }, [isFocused, customShopping]);
 
     const handlePressIn = (scale: Animated.Value) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -165,8 +153,8 @@ export function AllergiesScreen({ onContinue, onBack, onSkip, initialAllergies =
         }).start();
     };
 
-    const toggleAllergy = useCallback((id: string) => {
-        setSelectedAllergies(prev => {
+    const toggleShopping = useCallback((id: string) => {
+        setSelectedShopping(prev => {
             if (prev.includes(id)) {
                 return prev.filter(item => item !== id);
             } else {
@@ -176,7 +164,9 @@ export function AllergiesScreen({ onContinue, onBack, onSkip, initialAllergies =
     }, []);
 
     const handleNext = () => {
-        onContinue(selectedAllergies);
+        // Here we could technically merge customShopping into string array if needed, 
+        // similar logic could be done across the app, but for now we follow the existing pattern.
+        onContinue(selectedShopping);
     };
 
     return (
@@ -184,19 +174,19 @@ export function AllergiesScreen({ onContinue, onBack, onSkip, initialAllergies =
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.main}>
                     <View style={styles.header}>
-                        <ProgressIndicator currentStep={2} totalSteps={5} />
+                        <ProgressIndicator currentStep={3} totalSteps={5} />
                         <View style={styles.avatarContainer}>
                             <ExpoImage
-                                source={require('../../images/allergy.png')}
+                                source={require('../../images/cart.png')}
                                 style={styles.avatarImage}
                                 contentFit="contain"
                                 cachePolicy="memory-disk"
                                 transition={0}
                             />
                         </View>
-                        <Text style={styles.title}>Any allergies?</Text>
+                        <Text style={styles.title}>What do you shop for the most?</Text>
                         <Text style={styles.subtitle}>
-                            We'll filter recipes to ensure they're safe for you.
+                            Select the categories you buy most often.
                         </Text>
                     </View>
 
@@ -206,12 +196,12 @@ export function AllergiesScreen({ onContinue, onBack, onSkip, initialAllergies =
                         removeClippedSubviews={true}
                     >
                         <View style={styles.optionsGrid}>
-                            {ALLERGY_OPTIONS.map((option) => (
-                                <AllergyChip
+                            {SHOPPING_OPTIONS.map((option) => (
+                                <ShoppingChip
                                     key={option.id}
                                     option={option}
                                     isSelected={selectedSet.has(option.id)}
-                                    onToggle={() => toggleAllergy(option.id)}
+                                    onToggle={() => toggleShopping(option.id)}
                                 />
                             ))}
                         </View>
@@ -221,8 +211,8 @@ export function AllergiesScreen({ onContinue, onBack, onSkip, initialAllergies =
                             <View style={styles.customInputRow}>
                                 <TextInput
                                     style={styles.customInput}
-                                    value={customAllergy}
-                                    onChangeText={setCustomAllergy}
+                                    value={customShopping}
+                                    onChangeText={setCustomShopping}
                                     onFocus={() => setIsFocused(true)}
                                     onBlur={() => setIsFocused(false)}
                                 />
@@ -238,12 +228,6 @@ export function AllergiesScreen({ onContinue, onBack, onSkip, initialAllergies =
                             </View>
                         </View>
 
-                        <View style={styles.disclaimerContainer}>
-                            <Ionicons name="bulb-outline" size={20} color="#9CA3AF" />
-                            <Text style={styles.disclaimer}>
-                                Nouri provides guidance based on ingredients, but please always verify labels for severe allergies.
-                            </Text>
-                        </View>
                     </ScrollView>
 
                     <View style={styles.footer}>

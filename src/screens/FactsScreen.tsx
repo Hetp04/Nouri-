@@ -187,7 +187,7 @@ export function FactsScreen({ onContinue, onBack }: Props) {
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.main}>
                     <View style={styles.header}>
-                        <ProgressIndicator currentStep={3} totalSteps={4} />
+                        <ProgressIndicator currentStep={5} totalSteps={5} />
                         <View style={styles.avatarContainer}>
                             <ExpoImage
                                 source={require('../../images/facts.png')}

@@ -252,7 +252,7 @@ export function HomeScreen({ email, onSignOut }: Props) {
   const [micLevel, setMicLevel] = useState(0);
   const micLevelRef = useRef(0);
 
-  // The dock icons row has 3 × 40px circles + 2 × 10px gaps = 140px total
+  // The dock icons row now has 4 × 40px circles + 3 × 10px gaps = 190px total
   const COLLAPSED_MIC_WIDTH = 40;
   const EXPANDED_MIC_WIDTH = 140;
 

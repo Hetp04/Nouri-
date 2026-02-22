@@ -105,12 +105,12 @@ export function AnimatedScreen({ children, screenKey, direction = 'forward' }: P
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFEFB',
+        backgroundColor: '#FBFBF9',
         position: 'relative',
         overflow: 'hidden',
     },
     screen: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: '#FFFEFB',
+        backgroundColor: '#FBFBF9',
     },
 });

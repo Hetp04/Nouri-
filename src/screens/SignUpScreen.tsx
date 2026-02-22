@@ -505,7 +505,7 @@ export function SignUpScreen({ onBack, onSignUp, onSignIn, hideProgressBar = fal
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.scrollContent}>
                     <View style={styles.header}>
-                        {!hideProgressBar && <ProgressIndicator currentStep={4} totalSteps={4} />}
+                        {!hideProgressBar && <ProgressIndicator currentStep={5} totalSteps={5} />}
                         <Animated.View style={{ transform: [{ scale: backScale }] }}>
                             <Pressable
                                 style={styles.backButtonHeader}
